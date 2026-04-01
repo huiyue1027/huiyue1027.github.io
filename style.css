@@ -1,3 +1,8 @@
+/* I used a deep navy color instead of pure black to give it a more modern, 
+   art-gallery feel. The rgba background on paragraphs helps the text 
+   stay readable against the dark background.
+*/
+
 body {
     background-color: #1a1c2c;
     color: #e0e0e0;
@@ -30,6 +35,9 @@ header h1 {
     font-size: 16px;
     font-weight: bold;
 }
+/* Added a thick left border to the headings to create a clear visual 
+   anchor for each question. The cyan color matches the neon theme.
+*/
 
 h2 {
     color: #00d4ff;
