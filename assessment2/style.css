@@ -1,48 +1,47 @@
-/* 页面基础：白灰色调 */
-/* 页面基础：加入极简的高级微渐变背景 */
+/* I added a subtle gradient here instead of a plain color so the background does not feel too empty or boring */
 body { 
     font-family: Arial, sans-serif; 
     margin: 0; 
-    /* 这里是魔法：从左上角的冷白，平滑过渡到右下角的浅灰蓝，增加空间感 */
     background: linear-gradient(135deg, #f8f9fa 0%, #e2e6eb 100%); 
-    min-height: 100vh; /* 关键：确保渐变色铺满你整个屏幕的高度，不会半截断掉 */
+    min-height: 100vh; 
     color: #333; 
     text-align: center; 
 }
+
 header { background-color: #333; color: white; padding: 20px 0; }
 nav ul { list-style: none; padding: 15px 0; margin: 0; display: flex; justify-content: center; background: white; border-bottom: 1px solid #ddd; }
 nav ul li { margin: 0 15px; }
 nav ul li a { text-decoration: none; color: #333; font-weight: bold; }
 
-/* 播放器容器 */
+/* This makes the player pop out from the background. I gave it some rounded corners and a drop shadow to make it look like a real media player */
 .video-wrapper { position: relative; max-width: 800px; margin: 20px auto 0; background: black; overflow: hidden; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 video { width: 100%; display: block; }
 
-/* 核心修复：强制隐藏乱码菜单 */
+/* This is super important to stop the quality menu from just sitting on the page and breaking the layout */
 .hidden { display: none !important; }
 
-/* 控制栏：悬停显示 */
+/* I set the opacity to zero by default so the controls hide when you are just watching and they fade in when your mouse enters the video area */
 .yt-controls { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding: 10px 20px; box-sizing: border-box; opacity: 0; transition: opacity 0.3s ease; }
 .video-wrapper:hover .yt-controls { opacity: 1; }
 
-/* 进度条 */
+/* I made the progress rail get a little thicker when you hover over it so it is much easier to see and click */
 .progress-area { width: 100%; height: 15px; cursor: pointer; display: flex; align-items: center; margin-bottom: 10px; }
 .progress-rail { width: 100%; height: 5px; background: rgba(255,255,255,0.3); border-radius: 3px; position: relative; transition: height 0.1s; }
 .progress-area:hover .progress-rail { height: 8px; }
 #progress-fill { height: 100%; width: 0%; background: #ff0000; border-radius: 3px; }
 
-/* 按钮排版和图标大小约束 */
 .control-row { display: flex; justify-content: space-between; align-items: center; }
 .left-controls, .right-controls { display: flex; align-items: center; gap: 15px; }
+
+/* Constraining the icon sizes here so they do not blow up and ruin the control bar layout */
 .icon-btn { background: none; border: none; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; }
 .icon-btn img { width: 20px; height: 20px; display: block; }
 
-/* 音量悬停特效 */
+/* This creates the cool slide out effect. The slider starts with zero width and then expands when your mouse enters the volume section */
 .volume-hover-zone { display: flex; align-items: center; }
 #vol-slider { width: 0; opacity: 0; transition: width 0.3s, opacity 0.3s; cursor: pointer; accent-color: white; margin-left: 0; }
 .volume-hover-zone:hover #vol-slider { width: 80px; opacity: 1; margin-left: 10px; }
 
-/* 设置菜单弹窗样式 */
 #quality-menu { position: absolute; bottom: 60px; right: 20px; background: white; border-radius: 5px; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 #quality-menu ul { list-style: none; padding: 5px 0; margin: 0; text-align: left; }
 #quality-menu li { padding: 10px 25px; cursor: pointer; font-size: 14px; color: #333; }
