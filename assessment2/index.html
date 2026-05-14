@@ -9,10 +9,7 @@
     <script src="script.js" defer></script>
 </head>
 <body>
-    <header>
-        <h1>Media Player Website</h1>
-    </header>
-
+    <header><h1>Media Player Website</h1></header>
     <nav>
         <ul>
             <li><a href="#">Home</a></li>
@@ -21,62 +18,38 @@
             <li><a href="#">Playlists</a></li>
         </ul>
     </nav>
-
     <main class="container">
-        <div class="video-wrapper" id="player-outer-box">
+        <div class="video-wrapper" id="player-box">
             <video id="main-video">
                 <source src="https://thelongesthumstore.sgp1.cdn.digitaloceanspaces.com/IM-2250/miac.mp4" type="video/mp4">
             </video>
 
-            <div id="settings-panel" class="hidden">
+            <div id="quality-menu" class="hidden">
                 <ul>
-                    <li onclick="setQuality('1080p')">1080p</li>
-                    <li onclick="setQuality('720p')">720p</li>
-                    <li onclick="setQuality('Auto')">Auto</li>
+                    <li onclick="changeQ('1080p')">1080p</li>
+                    <li onclick="changeQ('720p')">720p</li>
                 </ul>
             </div>
 
             <div class="yt-controls">
-                <div class="progress-zone" id="scrub-container">
-                    <div class="progress-rail">
-                        <div id="progress-fill"></div>
-                    </div>
+                <div class="progress-area" id="scrub-container">
+                    <div class="progress-rail"><div id="progress-fill"></div></div>
                 </div>
-
-                <div class="control-bar">
-                    <div class="left-section">
-                        <button onclick="togglePlay()" class="icon-btn">
-                            <img id="play-icon" src="https://img.icons8.com/ios-glyphs/30/ffffff/play--v1.png" width="20">
-                        </button>
-                        
-                        <div class="volume-group">
-                            <button onclick="toggleMute()" class="icon-btn">
-                                <img id="mute-icon" src="https://img.icons8.com/ios-glyphs/30/ffffff/high-volume--v1.png" width="18">
-                            </button>
-                            <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="1">
+                <div class="control-row">
+                    <div class="left">
+                        <button onclick="togglePlay()" class="btn"><img id="p-img" src="https://img.icons8.com/ios-glyphs/30/ffffff/play--v1.png" width="20"></button>
+                        <div class="vol-zone">
+                            <button onclick="toggleMute()" class="btn"><img id="m-img" src="https://img.icons8.com/ios-glyphs/30/ffffff/high-volume--v1.png" width="18"></button>
+                            <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="1">
                         </div>
                     </div>
-
-                    <div class="right-section">
-                        <button onclick="toggleSettings()" class="icon-btn">
-                            <img src="https://img.icons8.com/ios-glyphs/30/ffffff/settings.png" width="18">
-                        </button>
-                        <button onclick="toggleFull()" class="icon-btn">
-                            <img src="https://img.icons8.com/ios-glyphs/30/ffffff/full-screen.png" width="18">
-                        </button>
+                    <div class="right">
+                        <button onclick="toggleS()" class="btn"><img src="https://img.icons8.com/ios-glyphs/30/ffffff/settings.png" width="18"></button>
+                        <button onclick="toggleF()" class="btn"><img src="https://img.icons8.com/ios-glyphs/30/ffffff/full-screen.png" width="18"></button>
                     </div>
                 </div>
             </div>
         </div>
-
-        <section>
-            <h2>Additional Content</h2>
-            <p>This interactive player is optimized for web delivery using external media resources to ensure fast loading and compatibility.</p>
-        </section>
     </main>
-
-    <footer>
-        <p>&copy; 2024 Media Player Website. All rights reserved.</p>
-    </footer>
 </body>
 </html>
