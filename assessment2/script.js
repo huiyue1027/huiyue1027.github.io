@@ -1,67 +1,89 @@
 /**
+ * OART1013 - Assignment 2 Final Implementation
+ * --------------------------------------------------------------------------
  * DESIGN RATIONALE (设计意图):
- * For this assignment, I chose the "Music Video" context. My primary goal was to balance 
- * a clean, usable interface with immersive visual effects that enhance the music's impact.
- * 我选择了“音乐录影带”作为主题。主要目标是在简洁好用的界面与沉浸式视觉效果之间取得平衡。
- * * EXTRA FEATURE (额外功能):
- * I implemented a "Neon Ambient Mode". When activated, the player glows with a dynamic 
- * shadow, mimicking the lighting effects of a live concert or club. This fits the MV 
- * context better than standard tutorials or art videos.
- * 我实现了一个“霓虹氛围模式”。激活后播放器会产生动态阴影，模仿音乐会或夜店的灯光效果，这比普通的教学视频更符合MV的主题。
- * * USABILITY & FEEDBACK (可用性与反馈):
- * I added visual feedback for the progress bar and icon changes for play/mute buttons to 
- * ensure the user always knows the player's status.
- * 我为进度条增加了视觉反馈，并为播放/静音按钮增加了图标切换，确保用户清楚播放器的状态。
+ * To solve the file size issue during Git upload, I reverted the media source to an 
+ * external URL. I maintained the original minimalist layout and navigation tabs 
+ * to preserve the website's core identity while enhancing its interactivity.
+ * 为了解决 Git 上传时文件过大的问题，我将媒体源改回了外部 URL。我保留了原始的
+ * 极简布局和导航标签，在维持网站核心视觉特征的同时增强了交互性。
+ *
+ * EXTRA FEATURES (额外功能):
+ * 1. YT-STYLE VOLUME: The volume slider is hidden and slides out on hover, saving 
+ * space and mimicking modern professional players.
+ * 2. DRAG-TO-SCRUB: I implemented a mouse-event based scrubbing logic that allows 
+ * users to click or drag across the progress bar to navigate the video.
+ * 3. FULLSCREEN & SETTINGS: Added Fullscreen API support and a quality mock menu.
+ * 1. YouTube式音量条：音量条默认隐藏，悬停时滑出，既节省空间又模仿了专业播放器。
+ * 2. 进度拖拽：我实现了基于鼠标事件的跳转逻辑，允许用户点击或拖动进度条。
+ * --------------------------------------------------------------------------
  */
 
-// 获取 HTML 元素 / Get elements
-const video = document.getElementById("custom-video-player");
-const playPauseImg = document.getElementById("play-pause-img");
-const muteImg = document.getElementById("mute-img");
-const progressBarFill = document.getElementById("progress-bar-fill");
-const videoContainer = document.getElementById("video-container");
+const video = document.getElementById("main-video");
+const fill = document.getElementById("progress-fill");
+const scrubContainer = document.getElementById("scrub-container");
+const volSlider = document.getElementById("volume-slider");
 
-// 1. 播放与暂停切换 / Toggle Play & Pause
-function togglePlayPause() {
-  // If the video is paused or ended, play it. Otherwise, pause it.
-  // 如果视频暂停或结束，则播放；否则暂停。
-  if (video.paused || video.ended) {
-    video.play();
-    playPauseImg.src = "https://img.icons8.com/ios-glyphs/30/pause--v1.png";
-  } else {
-    video.pause();
-    playPauseImg.src = "https://img.icons8.com/ios-glyphs/30/play--v1.png";
-  }
+// 1. 播放/暂停控制
+function togglePlay() {
+    const icon = document.getElementById("play-icon");
+    if (video.paused) {
+        video.play();
+        icon.src = "https://img.icons8.com/ios-glyphs/30/ffffff/pause--v1.png";
+    } else {
+        video.pause();
+        icon.src = "https://img.icons8.com/ios-glyphs/30/ffffff/play--v1.png";
+    }
 }
 
-// 2. 静音与取消静音 / Toggle Mute
-function toggleMute() {
-  if (video.muted) {
-    video.muted = false;
-    muteImg.src = "https://img.icons8.com/ios-glyphs/30/high-volume--v1.png";
-  } else {
-    video.muted = true;
-    muteImg.src = "https://img.icons8.com/ios-glyphs/30/mute--v1.png";
-  }
-}
-
-// 3. 进度条随视频更新 / Update Progress Bar as video plays
-// 'timeupdate' fires whenever the video playback position changes.
+// 2. 进度条自动跟随视频播放
 video.addEventListener("timeupdate", () => {
-  // Calculate percentage: current time / total duration * 100
-  const percentage = (video.currentTime / video.duration) * 100;
-  progressBarFill.style.width = percentage + "%";
+    const percent = (video.currentTime / video.duration) * 100;
+    fill.style.width = percent + "%";
 });
 
-// 4. EXTRA FEATURE: Neon Ambient Mode / 额外功能：霓虹氛围模式
-function toggleNeonMode() {
-  // We toggle a CSS class on the container to change the styling.
-  // 通过切换 CSS 类来改变播放器的外观。
-  videoContainer.classList.toggle("neon-active");
-  
-  // Console feedback for debugging
-  console.log("Neon Ambient Mode toggled.");
+// 3. 核心功能：点击并拖拽跳转进度 (Scrubbing)
+let isDragging = false;
+scrubContainer.addEventListener("mousedown", (e) => { isDragging = true; updateProgress(e); });
+window.addEventListener("mouseup", () => { isDragging = false; });
+scrubContainer.addEventListener("mousemove", (e) => { if (isDragging) updateProgress(e); });
+scrubContainer.addEventListener("click", updateProgress); // 支持直接点击跳转
+
+function updateProgress(e) {
+    const rect = scrubContainer.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left; // 计算相对于容器的X坐标
+    const scrubTime = (offsetX / scrubContainer.offsetWidth) * video.duration;
+    video.currentTime = Math.min(Math.max(0, scrubTime), video.duration);
 }
 
-// 5. 点击视频画面也可播放/暂停 / Click video to play/pause
-video.addEventListener("click", togglePlayPause);
+// 4. 音量调节逻辑
+volSlider.addEventListener("input", (e) => {
+    video.volume = e.target.value;
+});
+
+function toggleMute() {
+    video.muted = !video.muted;
+    document.getElementById("mute-icon").src = video.muted ? 
+        "https://img.icons8.com/ios-glyphs/30/ffffff/mute--v1.png" : 
+        "https://img.icons8.com/ios-glyphs/30/ffffff/high-volume--v1.png";
+}
+
+// 5. 全屏切换 (Fullscreen API)
+function toggleFull() {
+    const playerBox = document.getElementById("player-outer-box");
+    if (!document.fullscreenElement) {
+        playerBox.requestFullscreen();
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+// 6. 分辨率菜单显示/隐藏
+function toggleSettings() {
+    document.getElementById("settings-panel").classList.toggle("hidden");
+}
+
+function setQuality(q) {
+    alert("System: Switching to " + q + " quality...");
+    toggleSettings();
+}
