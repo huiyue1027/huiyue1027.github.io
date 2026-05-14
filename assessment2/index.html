@@ -1,42 +1,36 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <!-- add the font family of your choice -->
+    <title>Premium Music Video Player</title>
+    
     <link rel="stylesheet" href="reset.css" />
     <link rel="stylesheet" href="style.css" />
     <script src="script.js" defer></script>
   </head>
   <body>
-    <!-- Header Section -->
     <header>
-      <h1>Media Player Website</h1>
+      <h1>SonicVisuals | MV Player</h1>
     </header>
 
-    <!-- Navigation Section -->
     <nav>
       <ul>
         <li><a href="#">Home</a></li>
-        <li><a href="#">Videos</a></li>
-        <li><a href="#">Music</a></li>
-        <li><a href="#">Playlists</a></li>
-        <!-- Add or remove navigation items as needed -->
+        <li><a href="#">Trending MVs</a></li>
+        <li><a href="#">Artists</a></li>
       </ul>
     </nav>
 
-    <!-- Main Content Section -->
     <main class="container">
-      <!-- Media Player Section -->
-      <div class="media-player">
-        <video id="custom-video-player" controls>
+      <div class="media-player" id="player-container">
+        <video id="custom-video-player">
           <source
             src="https://thelongesthumstore.sgp1.cdn.digitaloceanspaces.com/IM-2250/miac.mp4"
             type="video/mp4"
           />
         </video>
+
         <div class="custom-controls">
           <button id="play-pause-btn" onclick="togglePlayPause()">
             <img
@@ -47,28 +41,43 @@
               height="24"
             />
           </button>
-          <!-- add the missing buttons or functionality here -->
-          <div class="progress-bar">
+
+          <button id="mute-btn" onclick="toggleMute()">
+            <img
+              id="mute-img"
+              src="https://img.icons8.com/ios-glyphs/30/high-volume--v1.png"
+              alt="Mute Button"
+              width="24"
+              height="24"
+            />
+          </button>
+
+          <div class="progress-bar" id="progress-scrubber" onclick="scrub(event)">
             <span id="progress-bar-fill"></span>
           </div>
         </div>
       </div>
 
-      <!-- Additional Content Section -->
-      <section>
-        <h2>Additional Content</h2>
-        <p>This is where you can showcase any other relevant content.</p>
-        <!-- Add more content as needed -->
+      <section class="interactions">
+        <h2>Exclusive Experience</h2>
+        <p>Enhance your music video experience with our unique features.</p>
+        
+        <button id="cinema-mode-btn" onclick="toggleCinemaMode()">
+          Toggle Cinema Mode
+        </button>
+
+        <div class="video-info">
+          <h3>Now Playing: Abstract Electronic Journey</h3>
+          <p>Artist: Digital Media Artist 2026</p>
+        </div>
       </section>
     </main>
 
-    <!-- Footer Section -->
     <footer>
-      <p>&copy; 2024 Media Player Website. All rights reserved.</p>
-      <a href="https://icons8.com/icon/59862/play">Play</a> icon by
-      <a href="https://icons8.com">Icons8</a>
-      <a href="https://icons8.com/icon/61012/pause">Pause</a> icon by
-      <a href="https://icons8.com">Icons8</a>
+      <p>&copy; 2026 Interactive Media OART1013. Designed by [Your Name].</p>
+      <div class="credits">
+        <a href="https://icons8.com">Icons by Icons8</a>
+      </div>
     </footer>
   </body>
 </html>
