@@ -1,89 +1,96 @@
 /**
- * OART1013 - Assignment 2 Final Implementation
- * --------------------------------------------------------------------------
- * DESIGN RATIONALE (设计意图):
- * To solve the file size issue during Git upload, I reverted the media source to an 
- * external URL. I maintained the original minimalist layout and navigation tabs 
- * to preserve the website's core identity while enhancing its interactivity.
- * 为了解决 Git 上传时文件过大的问题，我将媒体源改回了外部 URL。我保留了原始的
- * 极简布局和导航标签，在维持网站核心视觉特征的同时增强了交互性。
- *
- * EXTRA FEATURES (额外功能):
- * 1. YT-STYLE VOLUME: The volume slider is hidden and slides out on hover, saving 
- * space and mimicking modern professional players.
- * 2. DRAG-TO-SCRUB: I implemented a mouse-event based scrubbing logic that allows 
- * users to click or drag across the progress bar to navigate the video.
- * 3. FULLSCREEN & SETTINGS: Added Fullscreen API support and a quality mock menu.
- * 1. YouTube式音量条：音量条默认隐藏，悬停时滑出，既节省空间又模仿了专业播放器。
- * 2. 进度拖拽：我实现了基于鼠标事件的跳转逻辑，允许用户点击或拖动进度条。
- * --------------------------------------------------------------------------
+ * OART1013 - Assignment 2 Final Code
+ * * DESIGN RATIONALE (设计意图):
+ * I chose to maintain the original minimalist layout (white/grey theme with clear 
+ * navigation tabs) to ensure high usability. I replaced the local video with an 
+ * external URL to ensure smooth web delivery and prevent Git file limits.
+ * 我保留了原始的极简布局（白灰主题和清晰导航），以确保高可用性。我将本地视频
+ * 替换为外部URL，确保网页加载流畅并防止Git文件大小限制错误。
+ * * EXTRA FEATURES (额外交互功能):
+ * 1. YouTube-Style UI: The control bar appears on hover. The volume slider is 
+ * hidden by default and expands smoothly when hovering over the speaker icon.
+ * 2. Drag-to-Scrub: I implemented custom mouse event listeners on the progress 
+ * bar, allowing users to accurately seek through the video by dragging.
+ * 1. YouTube风格UI：控制栏悬停显示。音量滑块默认隐藏，悬停时平滑展开。
+ * 2. 进度条拖拽：我在进度条上实现了自定义鼠标事件，允许用户拖动精准跳转。
  */
 
 const video = document.getElementById("main-video");
-const fill = document.getElementById("progress-fill");
+const playImg = document.getElementById("play-img");
+const progressFill = document.getElementById("progress-fill");
 const scrubContainer = document.getElementById("scrub-container");
-const volSlider = document.getElementById("volume-slider");
+const volSlider = document.getElementById("vol-slider");
+const muteImg = document.getElementById("mute-img");
 
-// 1. 播放/暂停控制
+// 1. 播放与暂停
 function togglePlay() {
-    const icon = document.getElementById("play-icon");
     if (video.paused) {
         video.play();
-        icon.src = "https://img.icons8.com/ios-glyphs/30/ffffff/pause--v1.png";
+        playImg.src = "https://img.icons8.com/ios-glyphs/30/ffffff/pause--v1.png";
     } else {
         video.pause();
-        icon.src = "https://img.icons8.com/ios-glyphs/30/ffffff/play--v1.png";
+        playImg.src = "https://img.icons8.com/ios-glyphs/30/ffffff/play--v1.png";
     }
 }
 
-// 2. 进度条自动跟随视频播放
+// 视频画面点击也可播放/暂停
+video.addEventListener("click", togglePlay);
+
+// 2. 进度条更新
 video.addEventListener("timeupdate", () => {
-    const percent = (video.currentTime / video.duration) * 100;
-    fill.style.width = percent + "%";
+    const percentage = (video.currentTime / video.duration) * 100;
+    progressFill.style.width = percentage + "%";
 });
 
-// 3. 核心功能：点击并拖拽跳转进度 (Scrubbing)
+// 3. 进度条拖拽跳转 (Scrubbing)
 let isDragging = false;
-scrubContainer.addEventListener("mousedown", (e) => { isDragging = true; updateProgress(e); });
+scrubContainer.addEventListener("mousedown", (e) => { isDragging = true; updateScrub(e); });
 window.addEventListener("mouseup", () => { isDragging = false; });
-scrubContainer.addEventListener("mousemove", (e) => { if (isDragging) updateProgress(e); });
-scrubContainer.addEventListener("click", updateProgress); // 支持直接点击跳转
+scrubContainer.addEventListener("mousemove", (e) => { if (isDragging) updateScrub(e); });
+scrubContainer.addEventListener("click", updateScrub);
 
-function updateProgress(e) {
+function updateScrub(e) {
     const rect = scrubContainer.getBoundingClientRect();
-    const offsetX = e.clientX - rect.left; // 计算相对于容器的X坐标
-    const scrubTime = (offsetX / scrubContainer.offsetWidth) * video.duration;
-    video.currentTime = Math.min(Math.max(0, scrubTime), video.duration);
+    const pos = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+    const scrubTime = (pos / rect.width) * video.duration;
+    video.currentTime = scrubTime;
 }
 
-// 4. 音量调节逻辑
+// 4. 音量调节
 volSlider.addEventListener("input", (e) => {
     video.volume = e.target.value;
+    updateMuteIcon();
 });
 
 function toggleMute() {
     video.muted = !video.muted;
-    document.getElementById("mute-icon").src = video.muted ? 
-        "https://img.icons8.com/ios-glyphs/30/ffffff/mute--v1.png" : 
-        "https://img.icons8.com/ios-glyphs/30/ffffff/high-volume--v1.png";
+    updateMuteIcon();
 }
 
-// 5. 全屏切换 (Fullscreen API)
+function updateMuteIcon() {
+    if (video.muted || video.volume == 0) {
+        muteImg.src = "https://img.icons8.com/ios-glyphs/30/ffffff/mute--v1.png";
+    } else {
+        muteImg.src = "https://img.icons8.com/ios-glyphs/30/ffffff/high-volume--v1.png";
+    }
+}
+
+// 5. 全屏控制
 function toggleFull() {
-    const playerBox = document.getElementById("player-outer-box");
+    const box = document.getElementById("player-box");
     if (!document.fullscreenElement) {
-        playerBox.requestFullscreen();
+        box.requestFullscreen();
     } else {
         document.exitFullscreen();
     }
 }
 
-// 6. 分辨率菜单显示/隐藏
+// 6. 设置菜单弹窗
 function toggleSettings() {
-    document.getElementById("settings-panel").classList.toggle("hidden");
+    document.getElementById("quality-menu").classList.toggle("hidden");
 }
 
-function setQuality(q) {
-    alert("System: Switching to " + q + " quality...");
+function changeQ(quality) {
+    alert("Quality switched to: " + quality);
     toggleSettings();
 }
