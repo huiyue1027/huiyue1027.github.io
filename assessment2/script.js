@@ -24,7 +24,7 @@ function togglePlay() {
     }
 }
 
-// I also added a listener here so you can just click the video screen itself to pause or play
+//  also added a listener here so  just click the video screen itself to pause or play
 video.addEventListener("click", togglePlay);
 
 // This updates the red progress bar as the video plays by calculating the percentage of the current time against the total video length
