@@ -10,16 +10,43 @@
            CSS 样式设计 (Style & Affective Design)
            ========================================== */
         body {
-            background-color: #0d0d13;
+            background-color: #080810;
             color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             margin: 0;
             overflow: hidden;
+            position: relative;
+        }
+
+        /* 网页环境装饰 (Ambient Decoration) - 增加视觉层次感 */
+        .ambient-pillar {
+            position: absolute;
+            top: 10%;
+            width: 120px;
+            height: 80%;
+            background: linear-gradient(180deg, rgba(0, 242, 254, 0.05), rgba(248, 87, 166, 0.05));
+            border-left: 2px solid rgba(0, 242, 254, 0.2);
+            border-right: 2px solid rgba(248, 87, 166, 0.2);
+            filter: blur(2px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            opacity: 0.7;
+        }
+        .pillar-left { left: 5%; transform: rotate(-5deg); }
+        .pillar-right { right: 5%; transform: rotate(5deg); }
+        
+        .deco-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #f857a6;
+            box-shadow: 0 0 10px #f857a6;
+            border-radius: 50%;
         }
 
         /* 游戏主容器 */
@@ -31,7 +58,8 @@
             overflow: hidden;
             border: 3px solid #333;
             border-radius: 12px;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 40px rgba(0, 242, 254, 0.2);
+            z-index: 10;
         }
 
         /* 霓虹赛道 */
@@ -42,7 +70,7 @@
             width: 2px;
             background: linear-gradient(to bottom, #00f2fe, #4facfe);
             box-shadow: 0 0 12px #00f2fe;
-            opacity: 0.4;
+            opacity: 0.3;
         }
         #line-left { left: 120px; }
         #line-right { left: 240px; }
@@ -55,7 +83,7 @@
             box-shadow: 0 0 20px #f857a6;
             position: absolute;
             bottom: 40px;
-            left: 35px; /* 初始左赛道位置: (120/2) - (50/2) */
+            left: 155px; /* 初始中赛道位置 */
             border-radius: 8px;
             transition: left 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
@@ -63,6 +91,16 @@
         /* 玩家移动时的微流动效反馈 (Feedback) */
         #player.move-streak {
             transform: scaleX(0.8) scaleY(1.1);
+        }
+
+        /* 受伤闪烁动效 (Feedback) */
+        @keyframes hurt-flash {
+            0% { opacity: 1; filter: brightness(1); }
+            50% { opacity: 0.3; filter: brightness(3); }
+            100% { opacity: 1; filter: brightness(1); }
+        }
+        .hurt-anim {
+            animation: hurt-flash 0.15s linear 3;
         }
 
         /* 障碍物样式 */
@@ -79,21 +117,45 @@
         /* 游戏UI面板 */
         #ui-panel {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
+            top: 15px;
+            left: 15px;
+            right: 15px;
             display: flex;
-            justify-content: space-between;
-            font-size: 18px;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 1px;
-            text-shadow: 0 0 8px rgba(255,255,255,0.5);
             z-index: 10;
         }
 
-        #score-display { color: #00f2fe; }
-        #speed-display { color: #ff9900; }
+        .ui-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #score-display { color: #00f2fe; text-shadow: 0 0 8px #00f2fe; }
+        #speed-display { color: #ff9900; text-shadow: 0 0 8px #ff9900; }
+
+        /* 血条容器 */
+        .health-bar-container {
+            width: 100%;
+            height: 6px;
+            background-color: #222;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        #health-fill {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff5858, #f857a6);
+            box-shadow: 0 0 10px #f857a6;
+            transition: width 0.2s ease;
+        }
 
         /* 结束和开始界面遮罩 */
         .screen-overlay {
@@ -141,23 +203,36 @@
         }
 
         .hidden { display: none !important; }
+
         /* 让障碍物从屏幕上方掉落到下方的核心动画 */
-@keyframes fall {
-    0% {
-        top: -60px;
-    }
-    100% {
-        top: 600px; /* 对应游戏容器的 height: 600px */
-    }
-}
+        @keyframes fall {
+            0% { top: -60px; }
+            100% { top: 600px; }
+        }
     </style>
 </head>
 <body>
 
+    <div class="ambient-pillar pillar-left">
+        <div class="deco-dot"></div>
+        <div class="deco-dot" style="background-color: #00f2fe; box-shadow: 0 0 10px #00f2fe;"></div>
+        <div class="deco-dot"></div>
+    </div>
+    <div class="ambient-pillar pillar-right">
+        <div class="deco-dot"></div>
+        <div class="deco-dot" style="background-color: #00f2fe; box-shadow: 0 0 10px #00f2fe;"></div>
+        <div class="deco-dot"></div>
+    </div>
+
     <div id="game-container">
         <div id="ui-panel">
-            <div id="score-display">Score: 0</div>
-            <div id="speed-display">Speed: 1x</div>
+            <div class="ui-row">
+                <div id="score-display">Score: 0</div>
+                <div id="speed-display">Speed: 1x</div>
+            </div>
+            <div class="health-bar-container">
+                <div id="health-fill"></div>
+            </div>
         </div>
 
         <div id="line-left" class="lane-line"></div>
@@ -167,12 +242,12 @@
 
         <div id="start-screen" class="screen-overlay">
             <h1>GEOMETRIC RUSH</h1>
-            <p>使用键盘 [ ← ] 和 [ → ] 键改变赛道<br>躲避迎面而来的橙色障碍物</p>
+            <p>使用键盘 [ ← ] 和 [ → ] 键改变赛道<br>拥有 3 次护盾容错，躲避橙色障碍物</p>
             <button class="start-btn" onclick="startGame()">START INTERACTION</button>
         </div>
 
         <div id="gameover-screen" class="screen-overlay hidden">
-            <h1>CRASH DETECTED</h1>
+            <h1>SHIELD DEPLETED</h1>
             <p id="final-score">Your Score: 0</p>
             <button class="start-btn" onclick="startGame()">TRY AGAIN</button>
         </div>
@@ -180,34 +255,35 @@
 
     <script>
         /* ================================================================================
-        RMIT INTERACTIVE MEDIA - ASSIGNMENT 3 - CODE COMMENTS & DESIGN INTENT (512 WORDS)
+        RMIT INTERACTIVE MEDIA - ASSIGNMENT 3 - CODE COMMENTS & DESIGN INTENT (510 WORDS)
         ================================================================================
         [CONTEXT INFLUENCE & AFFECTIVE DESIGN]
         The selected context for this prototype is an experimental cyber-minimalist arcade interaction titled 
         "Geometric Rush: Dark Neon". This context directly dictates the visual styling, aesthetic choices, and 
         emotional response (affective design). To evoke a sense of high-velocity tension inherent in arcade systems, 
-        a high-contrast dark palette (#0d0d13) is combined with vibrant, glowing neon elements. The sharp geometric 
+        a high-contrast dark palette (#080810) is combined with vibrant, glowing neon elements. The sharp geometric 
         forms—a glowing magenta square for the user and intense orange rectangles for obstacles—create immediate 
-        cognitive separation. This stylistic minimalism ensures that the user is not distracted by secondary background 
-        assets, channelling entire cognitive focus toward the core mechanics of the interactive space.
+        cognitive separation. Ambient decorative pillars with glowing nodes are implemented outside the canvas 
+        to extend the atmospheric immersion, transforming the plain web browser into a holistic digital arcade cabinet.
 
         [ACTION, USABILITY, AND INTERACTION FEEDBACK]
         The primary core action implemented is [Navigate], map-assigned to the standard physical keyboard hardware 
         via 'ArrowLeft' and 'ArrowRight' keys. Usability is prioritized by dividing the canvas into three distinct, 
         predictable lanes. This constrained spatial environment prevents user frustration commonly caused by loose, 
         unbounded tracking. The physical transition of the player across lanes employs a custom CSS cubic-bezier 
-        curve animation lasting exactly 0.12 seconds. This specific timing balances structural responsiveness (immediate 
-        execution) with visual continuity (preventing harsh positional snapping). To enrich interactive feedback, a 
-        temporary squash-and-stretch transformation matrix (.move-streak) is applied via JavaScript upon key detection, 
-        simulating kinetic inertia and providing a tactile, juicy movement feel. Score increments act as a continuous 
-        reward schedule, reinforcing survival behavior.
+        curve animation lasting exactly 0.12 seconds. To enrich interactive feedback, a temporary squash-and-stretch 
+        transformation matrix (.move-streak) is applied via JavaScript upon key detection, simulating kinetic inertia. 
+        Furthermore, an integrated health bar framework provides non-punitive usability; rather than instantaneous 
+        failure, players have a 3-hit tolerance limit. When hit, a rigorous flash animation (.hurt-anim) delivers 
+        acute sensory feedback, alerting users to state changes.
 
         [COMPLEXITY, DIFFICULTY SCALING, AND ACCESSIBILITY]
         Usability is further engineered through an incremental difficulty loop managed via a core ticker. As time 
         progresses, the generation window for obstacles dynamically shrinks, and the vertical pixel displacement 
         speed steps up, increasing cognitive load. This directly addresses the flow state, transitioning the user 
         from relaxed onboarding to intense engagement. Collision detection runs via an absolute coordinate bounding-box 
-        algorithm (getBoundingClientRect), cross-referencing intersections to trigger the immediate termination of the loop.
+        algorithm (getBoundingClientRect) featuring a temporary post-collision invulnerability window to prevent 
+        unfair stacked frame damage.
 
         [FUTURE IMPLEMENTATION: BENEFITS & CHALLENGES]
         Integrating this standalone interaction prototype into a broader, production-level digital media framework offers 
@@ -235,6 +311,10 @@
         let gameLoopInterval;
         let difficultyInterval;
         let obstacles = [];
+        
+        // 新增：血量和无敌状态变量
+        let health = 3;
+        let isInvulnerable = false;
 
         // 赛道对应的绝对 X 轴左边距 (px)
         const lanePositions = [35, 155, 275]; 
@@ -243,6 +323,7 @@
         const container = document.getElementById('game-container');
         const scoreDisplay = document.getElementById('score-display');
         const speedDisplay = document.getElementById('speed-display');
+        const healthFill = document.getElementById('health-fill');
         const startScreen = document.getElementById('start-screen');
         const gameoverScreen = document.getElementById('gameover-screen');
         const finalScore = document.getElementById('final-score');
@@ -281,9 +362,13 @@
             currentLane = 1;
             obstacleSpeed = 4;
             spawnRate = 1200;
+            health = 3;
+            isInvulnerable = false;
             gameActive = true;
             
             player.style.left = lanePositions[currentLane] + 'px';
+            player.className = ''; // 清除闪烁类
+            healthFill.style.width = '100%'; // 填满血条
             scoreDisplay.innerText = "Score: " + score;
             speedDisplay.innerText = "Speed: 1x";
 
@@ -328,7 +413,6 @@
             obs.style.top = '-60px';
             
             // 使用原生 CSS 动画控制下落速度
-            obs.style.animate = 'none'; 
             obs.style.animation = `fall ${obstacleSpeed}s linear forwards`;
             
             container.appendChild(obs);
@@ -345,9 +429,9 @@
             });
         }
 
-        // 碰撞检测循环 (每 16ms 运行一次，达到 60fps 级别的 Usability 体验)
+        // 碰撞检测循环
         function updatePhysics() {
-            if (gameActive && obstacles.length > 0) {
+            if (gameActive && obstacles.length > 0 && !isInvulnerable) {
                 const playerRect = player.getBoundingClientRect();
 
                 for (let i = 0; i < obstacles.length; i++) {
@@ -358,7 +442,9 @@
                           playerRect.left > obsRect.right || 
                           playerRect.bottom < obsRect.top || 
                           playerRect.top > obsRect.bottom)) {
-                        gameOver();
+                        
+                        // 触发扣血机制
+                        handlePlayerHit(obstacles[i]);
                         break;
                     }
                 }
@@ -367,6 +453,30 @@
         }
         // 启动碰撞监听
         requestAnimationFrame(updatePhysics);
+
+        // 处理玩家撞击事件
+        function handlePlayerHit(hitObstacle) {
+            health--;
+            // 更新血条UI
+            healthFill.style.width = (health / 3 * 100) + '%';
+            
+            // 移除撞到玩家的那个障碍物，防止连续扣血
+            hitObstacle.remove();
+            obstacles = obstacles.filter(item => item !== hitObstacle);
+
+            if (health <= 0) {
+                gameOver();
+            } else {
+                // 进入短暂无敌和闪烁状态（Feedback反馈）
+                isInvulnerable = true;
+                player.classList.add('hurt-anim');
+                
+                setTimeout(() => {
+                    isInvulnerable = false;
+                    player.classList.remove('hurt-anim');
+                }, 450); // 0.45秒无敌时间
+            }
+        }
 
         // 结束互动
         function gameOver() {
