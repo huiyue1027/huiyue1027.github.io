@@ -141,6 +141,15 @@
         }
 
         .hidden { display: none !important; }
+        /* 让障碍物从屏幕上方掉落到下方的核心动画 */
+@keyframes fall {
+    0% {
+        top: -60px;
+    }
+    100% {
+        top: 600px; /* 对应游戏容器的 height: 600px */
+    }
+}
     </style>
 </head>
 <body>
